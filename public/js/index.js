@@ -14,16 +14,28 @@
 
   socket.on('newMessage', function(message) {
     console.log('new message', message);
-    var currentVal = $('#messages').val();
-    $('#messages').val(currentVal + createMessageText(message));
+    addMessage(message);
+    $('#messages').scrollTop($('#messages')[0].scrollHeight);
   });
 
   socket.on('connectedCountChanged', function(connection) {
+    var oldCount = $('#connectionCount').html();
+    if(oldCount === "") {
+      oldCount = 0;
+    }
+
+    addMessage("Connection count changed from " + oldCount + " to " + connection.connectedCount);
     $('#connectionCount').html(connection.connectedCount);
   });
 
   createMessageText = function(message) {
-    return "\n" + message.from + "\n" + message.text;
+    return message.from + "\n" + message.text;
+  }
+
+  addMessage = function(message) {
+    var currentVal = $('#messages').val();
+    var newMessage = message.text ? createMessageText(message) : message;
+    $('#messages').val(currentVal + newMessage + "\n");
   }
 
 $(document).ready(function() {
@@ -42,8 +54,8 @@ $(document).ready(function() {
 
   $('#text').on('keydown', function(key) {
     if(key.keyCode === 13) {
+      key.preventDefault();
       $('#send').click();
-      return true;
     }
   });
 });
