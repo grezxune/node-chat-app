@@ -15,7 +15,6 @@
   socket.on('newMessage', function(message) {
     console.log('new message', message);
     addMessage(message);
-    $('#messages').scrollTop($('#messages')[0].scrollHeight);
   });
 
   socket.on('connectedCountChanged', function(connection) {
@@ -36,6 +35,7 @@
     var currentVal = $('#messages').val();
     var newMessage = message.text ? createMessageText(message) : message;
     $('#messages').val(currentVal + newMessage + "\n");
+    $('#messages').scrollTop($('#messages')[0].scrollHeight);
   }
 
 $(document).ready(function() {
