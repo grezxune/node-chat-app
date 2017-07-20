@@ -18,6 +18,10 @@
     $('#messages').val(currentVal + createMessageText(message));
   });
 
+  socket.on('connectedCountChanged', function(connection) {
+    $('#connectionCount').html(connection.connectedCount);
+  });
+
   createMessageText = function(message) {
     return "\n" + message.from + "\n" + message.text;
   }

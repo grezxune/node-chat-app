@@ -9,11 +9,14 @@ const port = process.env.PORT || 3000;
 var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
+var connectedCount = 0;
 
 app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
   console.log('new user connected');
+  connectedCount++;
+  io.emit('connectedCountChanged', { connectedCount: connectedCount });
 
   // socket.emit('newMessage', {
   //   from: 'tomtrezb2003@gmail.com',
@@ -33,8 +36,11 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
+    connectedCount--;
+    io.emit('connectedCountChanged', { connectedCount: connectedCount });
   });
 });
+
 
 server.listen(port, () => {
   console.log(`Listening on port ${port}`);
