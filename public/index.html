@@ -3,32 +3,38 @@
 <head>
   <title>Chat App</title>
   <meta charset="utf-8"/>
+  <link rel="stylesheet" href="/css/index.css" type="text/css"/>
 </head>
 <body>
-  <p>Welcome to the chat app! There are <span id="connectionCount"></span> users connected!</p>
+  <div class="main-container">
+    <div class="content">
+      <p>Welcome to the chat app! There are <span id="connectionCount"></span> users connected!</p>
+    </div>
 
-  <div>
-    <label for="from">From</label>
-    <input type="text" id="from"/>
+    <div class="content">
+      <label for="from">From</label>
+      <input type="text" id="from"/>
+    </div>
+
+    <div class="content">
+      <label for="text">Text</label>
+      <textarea id="text" cols=50 rows=4></textarea>
+    </div>
+
+    <div class="content">
+      <input type="button" value="Send" id="send"/>
+    </div>
+
+    <div class="content">
+      <textarea cols=50 rows=20 id="messages"></textarea>
+    </div>
+
+    <div class="content">
+      <p id="usersTyping"></p>
+    </div>
   </div>
 
-  <div>
-    <label for="text">Text</label>
-    <textarea id="text"></textarea>
-  </div>
-
-  <div>
-    <input type="button" value="Send" id="send"/>
-  </div>
-
-  <div>
-    <textarea cols=50 rows=20 id="messages"></textarea>
-  </div>
-  <div>
-    <p id="usersTyping"></p>
-  </div>
-  <script
-  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
