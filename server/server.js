@@ -11,6 +11,7 @@ var server = http.createServer(app);
 var io = socketIO(server);
 var connectedCount = 0;
 var usersTyping = new Array();
+var usersConnected = new Array();
 
 app.use(express.static(publicPath));
 
@@ -39,6 +40,9 @@ io.on('connection', (socket) => {
     console.log('user disconnected');
     connectedCount--;
     io.emit('connectedCountChanged', { connectedCount: connectedCount });
+    var index = usersConnected.indexOf(socket.name);
+    usersConnected.splice(index, 1);
+    io.emit('removeUser', {names: usersConnected});
   });
 
   socket.on('isTyping', (user) => {
@@ -55,6 +59,15 @@ io.on('connection', (socket) => {
       io.emit('stoppedTyping', {names: usersTyping});
     }
   });
+
+  socket.on('newUserConnected', (user) => {
+    console.log('new user connected', user);
+    socket.name = user.user;
+    if(user.user && user.user.trim().length > 0) {
+      usersConnected.push(user.user);
+      io.emit('addUser', {names: usersConnected});
+    }
+  })
 });
 
 

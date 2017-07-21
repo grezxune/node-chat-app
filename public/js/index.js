@@ -1,13 +1,18 @@
   var socket = io();
   var usersCurrentlyTyping = new Array();
+  var from = "";
+  var connectedUsers = new Array();
 
   socket.on('connect', function() {
     console.log('connected to server');
+    while(from.trim() === "") {
+       from = prompt("What is your name?");
+    }
 
-    // socket.emit('createMessage', {
-    //   from: 'Tommy',
-    //   text: 'Yo! Socket.IO test!'
-    // });
+    $('#from').html(from);
+    $('#text').focus();
+
+    socket.emit('newUserConnected', {user: from});
   });
 
   socket.on('disconnect', function() {
@@ -49,8 +54,30 @@
     $('#usersTyping').html(message);
   });
 
+  socket.on('addUser', function(users) {
+    connectedUsers = users.names;
+    var usersHtml = "";
+
+    $.each(connectedUsers, function(index, value) {
+      usersHtml += "<span class=\"user-name\">" + value + "</span><br/>";
+    });
+
+    $('.connected-users').html(usersHtml);
+  });
+
+  socket.on('removeUser', function(users) {
+    connectedUsers = users.names;
+    var usersHtml = "";
+
+    $.each(connectedUsers, function(index, value) {
+      usersHtml += "<span class=\"user-name\">" + value + "</span><br/>";
+    });
+
+    $('.connected-users').html(usersHtml);
+  });
+
   createMessageText = function(message) {
-    return message.from + "\n" + message.text;
+    return message.from + ":\n" + message.text;
   }
 
   addMessage = function(message) {
@@ -61,7 +88,6 @@
   }
 
   isTyping = function() {
-    var from = $('#from').val();
     var message = $('#text').val();
 
     if(from.trim().length > 0) {
@@ -79,7 +105,6 @@
 
 $(document).ready(function() {
   $('#send').on('click', function() {
-    var from = $('#from').val();
     var message = $('#text').val();
 
     if(from.trim().length > 0 && message.trim().length > 0) {

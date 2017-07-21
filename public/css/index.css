@@ -1,8 +1,18 @@
+.master {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
 .main-container {
   display: flex;
   flex-flow: column nowrap;
   align-items: center;
   justify-content: center;
+  margin: 20px;
 }
 
 .content {
@@ -15,4 +25,8 @@
 
 .content * {
   margin: 3px;
+}
+
+.user-name {
+  font-weight: bold;
 }

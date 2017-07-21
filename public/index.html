@@ -6,31 +6,38 @@
   <link rel="stylesheet" href="/css/index.css" type="text/css"/>
 </head>
 <body>
-  <div class="main-container">
-    <div class="content">
-      <p>Welcome to the chat app! There are <span id="connectionCount"></span> users connected!</p>
-    </div>
+  <div class="master">
+    <div class="main-container">
+      <div class="content">
+        <p>Welcome to the chat app! There are <span id="connectionCount"></span> users connected!</p>
+      </div>
 
-    <div class="content">
-      <label for="from">From</label>
-      <input type="text" id="from"/>
-    </div>
+      <div class="content">
+        <label for="from">YOU:</label>
+        <label type="text" id="from"></label>
+      </div>
 
-    <div class="content">
-      <label for="text">Text</label>
-      <textarea id="text" cols=50 rows=4></textarea>
-    </div>
+      <div class="content">
+        <label for="text">Text</label>
+        <textarea id="text" cols=50 rows=4></textarea>
+      </div>
 
-    <div class="content">
-      <input type="button" value="Send" id="send"/>
-    </div>
+      <div class="content">
+        <input type="button" value="Send" id="send"/>
+      </div>
 
-    <div class="content">
-      <textarea cols=50 rows=20 id="messages"></textarea>
-    </div>
+      <div class="content">
+        <textarea cols=50 rows=20 id="messages"></textarea>
+      </div>
 
-    <div class="content">
-      <p id="usersTyping"></p>
+      <div class="content">
+        <p id="usersTyping"></p>
+      </div>
+    </div>
+    <div class="main-container">
+      <h5>Connected Users</h5>
+      <div class="connected-users">
+      </div>
     </div>
   </div>
 
