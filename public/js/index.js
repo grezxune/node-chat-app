@@ -45,7 +45,7 @@
       var haveMultipleTyped = usersCurrentlyTyping.length > 1;
       message = usersCurrentlyTyping.join(', ') + (haveMultipleTyped ? ' have typed some shit' : ' has typed some shit');
     }
-    
+
     $('#usersTyping').html(message);
   });
 
@@ -90,6 +90,7 @@ $(document).ready(function() {
 
       $('#text').val('');
       $('#text').focus();
+      isTyping();
     }
   });
 
