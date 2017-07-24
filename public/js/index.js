@@ -5,7 +5,7 @@
 
   socket.on('connect', function() {
     console.log('connected to server');
-    while(from.trim() === "") {
+    while(!from || from.trim() === "") {
        from = prompt("What is your name?");
     }
 
