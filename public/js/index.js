@@ -77,7 +77,7 @@
   });
 
   createMessageText = function(message) {
-    return message.from + ":\n" + message.text;
+    return message.from + " (" + message.createdAt + "):\n" + message.text;
   }
 
   addMessage = function(message) {

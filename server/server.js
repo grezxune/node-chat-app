@@ -29,10 +29,16 @@ io.on('connection', (socket) => {
   socket.on('createMessage', (newMessage) => {
     console.log('createMessage', newMessage);
 
+    var date = new Date();
+    var options = {
+        weekday: "long", year: "numeric", month: "short",
+        day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit"
+    };
+
     io.emit('newMessage', {
       from: newMessage.from,
       text: newMessage.text,
-      createdAt: new Date()
+      createdAt: date.toLocaleDateString('en-us', options)
     });
   });
 
