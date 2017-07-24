@@ -40,7 +40,7 @@ io.on('connection', (socket) => {
     console.log('user disconnected');
     connectedCount--;
     io.emit('connectedCountChanged', { connectedCount: connectedCount });
-    userStoppedTyping({name: socket.name});
+    userStoppedTyping({from: socket.name});
     var index = usersConnected.indexOf(socket.name);
     usersConnected.splice(index, 1);
     io.emit('removeUser', {names: usersConnected});
@@ -68,6 +68,7 @@ io.on('connection', (socket) => {
 });
 
 userStoppedTyping = (user) => {
+    console.log('userStoppedTyping', user);
     if(usersTyping.includes(user.from)) {
       var index = usersTyping.indexOf(user.from);
       var newTest = usersTyping.splice(index, 1);
