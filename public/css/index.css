@@ -1,32 +1,41 @@
-.master {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  width: 100%;
+#master {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
 }
 
 .main-container {
-  display: flex;
-  flex-flow: column nowrap;
-  align-items: center;
-  justify-content: center;
-  margin: 20px;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+    margin: 20px;
 }
 
 .content {
-  margin: 10px;
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
+    margin: 10px;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
 }
 
 .content * {
-  margin: 3px;
+    margin: 3px;
 }
 
 .user-name {
-  font-weight: bold;
+    font-weight: bold;
+    display: block;
+}
+
+.message-container {
+    display: block;
+}
+
+.message {
+    display: block;
 }

@@ -1,50 +1,60 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Chat App</title>
-  <meta charset="utf-8"/>
-  <link rel="stylesheet" href="/css/index.css" type="text/css"/>
-</head>
-<body>
-  <div class="master">
-    <div class="main-container">
-      <div class="content">
-        <p>Welcome to the chat app! There are <span id="connectionCount"></span> users connected!</p>
-      </div>
+    <head>
+        <title>Chat App</title>
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" href="/css/index.css" type="text/css"/>
+    </head>
+    <body>
+        <div id="master">
+            <div class="main-container">
+                <div class="content">
+                    <p>Welcome to the chat app! There are <span data-bind="text: connectedUsers().length"></span> users connected!</p>
+                </div>
 
-      <div class="content">
-        <label for="from">YOU:</label>
-        <label type="text" id="from"></label>
-      </div>
+                <div class="content">
+                    <label for="from">YOU:</label>
+                    <label type="text" data-bind="text: name"></label>
+                </div>
 
-      <div class="content">
-        <label for="text">Text</label>
-        <textarea id="text" cols=50 rows=4></textarea>
-      </div>
+                <div class="content">
+                    <label for="text">Text</label>
+                    <textarea id="text" cols=50 rows=4 data-bind="textInput: currentMessage"></textarea>
+                </div>
 
-      <div class="content">
-        <input type="button" value="Send" id="send"/>
-      </div>
+                <div class="content">
+                    <input type="button" value="Send" id="send"/>
+                </div>
 
-      <div class="content">
-        <textarea cols=50 rows=20 id="messages"></textarea>
-      </div>
+                <div class="content">
+                    <div class="message-container">
+                        <!-- ko foreach: messages -->
+                        <div class="message">
+                            <div class="timestamp"><span data-bind="text: createdAt"></span></div>
+                            <div class="from"><span data-bind="text: from"></span></div>
+                            <div class="message-text"><span data-bind="text: text"></span></div>
+                        </div> 
+                        <!-- /ko -->
+                    </div>
+                </div>
 
-      <div class="content">
-        <p id="usersTyping"></p>
-      </div>
-    </div>
-    <div class="main-container">
-      <h5>Connected Users</h5>
-      <div class="connected-users">
-      </div>
-    </div>
-  </div>
+                <div class="content">
+                    <p data-bind="text: usersTypingMessage"></p>
+                </div>
+            </div>
+            <div class="main-container">
+                <h5>Connected Users</h5>
+                <div class="connected-users">
+                    <!-- ko foreach: connectedUsers -->
+                    <span class="user-name" data-bind="text: $data"></span>
+                    <!-- /ko -->
+                </div>
+            </div>
+        </div>
 
-  <script src="https://code.jquery.com/jquery-3.2.1.min.js"
-  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-  crossorigin="anonymous"></script>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/js/index.js"></script>
-</body>
+        <script src="/js/jquery-3.2.1.min.js"></script>
+        <script src="/js/knockout-4.5.2.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/js/index.js"></script>
+    </body>
 </html>
