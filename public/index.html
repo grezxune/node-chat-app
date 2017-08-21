@@ -9,7 +9,7 @@
         <div id="master">
             <div class="main-container">
                 <div class="content">
-                    <p>Welcome to the chat app! There are <span data-bind="text: connectedUsers().length"></span> users connected!</p>
+                    <p data-bind="text: welcomeMessage"></p>
                 </div>
 
                 <div class="content">
@@ -23,7 +23,8 @@
                 </div>
 
                 <div class="content">
-                    <input type="button" value="Send" id="send"/>
+                    <input type="button" value="Send" data-bind="click: sendMessage"/>
+                    <input type="button" value="Send Location" data-bind="click: sendLocation"/>
                 </div>
 
                 <div class="content">
@@ -52,8 +53,8 @@
             </div>
         </div>
 
-        <script src="/js/jquery-3.2.1.min.js"></script>
-        <script src="/js/knockout-4.5.2.js"></script>
+        <script src="/js/libs/jquery-3.2.1.min.js"></script>
+        <script src="/js/libs/knockout-4.5.2.js"></script>
         <script src="/socket.io/socket.io.js"></script>
         <script src="/js/index.js"></script>
     </body>

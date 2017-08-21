@@ -6,6 +6,12 @@ function ViewModel() {
     self.messages = ko.observableArray();
     self.currentMessage = ko.observable('');
 
+    self.welcomeMessage = ko.computed(function() {
+        var multipleUsersConnected = self.connectedUsers().length > 1;
+
+        return `Welcome to the chat app! There ${multipleUsersConnected ? 'are' : 'is'} ${self.connectedUsers().length} ${multipleUsersConnected ? 'users' : 'user'} connected!`;
+    });
+
     self.usersTypingMessage = ko.computed(function() {
         var message = '';
         var multipleUsersCurrentlyTyping = self.usersCurrentlyTyping().length > 1;
@@ -49,6 +55,11 @@ socket.on('newMessage', function (message) {
     viewModel.messages.push(new Message(message.from, message.text, message.createdAt));
 });
 
+socket.on('newLocationMessage', function (message) {
+    console.log('new location message', message);
+    viewModel.messages.push(new Message(message.from, message.url, message.createdAt));
+});
+
 socket.on('connectedCountChanged', function (connection) {
     var oldCount = $('#connectionCount').html();
     if (oldCount === "") {
@@ -75,7 +86,7 @@ socket.on('removeUser', function (users) {
     viewModel.connectedUsers(users.names);
 });
 
-isTyping = function () {
+function isTyping() {
     if (viewModel.name().trim().length > 0) {
         if (viewModel.currentMessage().trim().length > 0) {
             socket.emit('isTyping', {
@@ -89,24 +100,44 @@ isTyping = function () {
     }
 }
 
-$(document).ready(function () {
-    $('#send').on('click', function () {
-        if (viewModel.name().trim().length > 0 && viewModel.currentMessage().trim().length > 0) {
-            socket.emit('createMessage', {
-                from: viewModel.name(),
-                text: viewModel.currentMessage()
+function sendMessage() {
+    if (viewModel.name().trim().length > 0 && viewModel.currentMessage().trim().length > 0) {
+        socket.emit('createMessage', {
+            from: viewModel.name(),
+            text: viewModel.currentMessage()
+        }, function(data) {
+            console.log('Got it', data.string);
+        });
+
+        viewModel.currentMessage('');
+        isTyping();
+        $('#text').focus();
+    }
+}
+
+function sendLocation() {
+    if(!navigator.geolocation) {
+        alert('Geolocation is not available');
+    } else {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            console.log(position);
+            socket.emit('createLocationMessage', {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+            }, function(data) {
+                console.log('Acknowledgement!', data.string);
             });
+        }, function() {
+            alert('Unable to fetch location');
+        });
+    }
+}
 
-            viewModel.currentMessage('');
-            $('#text').focus();
-            isTyping();
-        }
-    });
-
+$(document).ready(function () {
     $('#text').on('keydown', function (key) {
         if (key.keyCode === 13) {
             key.preventDefault();
-            $('#send').click();
+            sendMessage();
         }
     }).on('keyup', function (key) {
         if (key.keyCode === 13) {
