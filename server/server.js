@@ -26,20 +26,9 @@ io.on('connection', (socket) => {
     //   createdAt: new Date().getTime()
     // });
 
-    socket.on('createMessage', (newMessage) => {
+    socket.on('createMessage', (newMessage, callback) => {
         console.log('createMessage', newMessage);
-
-        var date = new Date();
-        var options = {
-            weekday: "long", year: "numeric", month: "short",
-            day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit"
-        };
-
-        io.emit('newMessage', {
-            from: newMessage.from,
-            text: newMessage.text,
-            createdAt: date.toLocaleDateString('en-us', options)
-        });
+        emitMessage(socket, newMessage, callback);
     });
 
     socket.on('disconnect', () => {
@@ -70,7 +59,11 @@ io.on('connection', (socket) => {
             usersConnected.push(user.user);
             io.emit('addUser', { names: usersConnected });
         }
-    })
+    });
+
+    socket.on('createLocationMessage', (coords, callback) => {
+        emitLocationMessage(socket, coords, callback);
+    });
 });
 
 userStoppedTyping = (user) => {
@@ -79,6 +72,46 @@ userStoppedTyping = (user) => {
         var index = usersTyping.indexOf(user.from);
         var newTest = usersTyping.splice(index, 1);
         io.emit('stoppedTyping', { names: usersTyping });
+    }
+};
+
+emitMessage = (socket, message, callback) => {
+    var date = new Date();
+    var options = {
+        weekday: "long", year: "numeric", month: "short",
+        day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit"
+    };
+
+    io.emit('newMessage', {
+        from: socket.name,
+        text: message.text,
+        createdAt: date.toLocaleDateString('en-us', options)
+    });
+
+    if(callback) {
+        callback({
+            'string': 'This is from the server'
+        });
+    }
+};
+
+emitLocationMessage = (socket, coords, callback) => {
+    var date = new Date();
+    var options = {
+        weekday: "long", year: "numeric", month: "short",
+        day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit"
+    };
+
+    io.emit('newLocationMessage', {
+        from: socket.name,
+        url: `https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`,
+        createdAt: date.toLocaleDateString('en-us', options)
+    });
+
+    if(callback) {
+        callback({
+            'string': 'Sending location url'
+        });
     }
 };
 
