@@ -2,9 +2,12 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
+const moment = require('moment');
 
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
+const {isNullOrEmpty} = require('./utils/isNullOrEmpty.js');
+const {generateMessage} = require('./utils/generateMessage');
 
 var app = express();
 var server = http.createServer(app);
@@ -12,11 +15,31 @@ var io = socketIO(server);
 var connectedCount = 0;
 var usersTyping = new Array();
 var usersConnected = new Array();
+var {Rooms} = require('./models/rooms');
+var currentChatRooms = new Rooms();
 
 app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
     console.log('new user connected');
+
+    socket.on('join', (newUser, callback) => {
+        console.log('newUser:', newUser);
+        if(!isNullOrEmpty(newUser.name) && !isNullOrEmpty(newUser.room)) {
+            if(!currentChatRooms.join(newUser.room, newUser.name, socket.id)) {
+                callback(`There was an error with ${newUser.name} joining room ${newUser.room}`);
+            } else {
+                socket.join(newUser.room);
+                socket.emit('newMessage', generateMessage('Admin', `Welcome to ${newUser.room}!`));
+                socket.broadcast.emit('newMessage', generateMessage('Admin', `${newUser.name} has joined!`));
+                callback();
+            }
+        } else {
+            callback('User name and room are required');
+        }
+    });
+
+
     connectedCount++;
     io.emit('connectedCountChanged', { connectedCount: connectedCount });
 
@@ -76,16 +99,10 @@ userStoppedTyping = (user) => {
 };
 
 emitMessage = (socket, message, callback) => {
-    var date = new Date();
-    var options = {
-        weekday: "long", year: "numeric", month: "short",
-        day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit"
-    };
-
     io.emit('newMessage', {
         from: socket.name,
         text: message.text,
-        createdAt: date.toLocaleDateString('en-us', options)
+        createdAt: moment().valueOf()
     });
 
     if(callback) {

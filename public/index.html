@@ -1,61 +1,29 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Chat App</title>
+        <meta name="viewport" content="width=device-width">
         <meta charset="utf-8"/>
+        <title>Chat | ChatApp</title>
         <link rel="stylesheet" href="/css/index.css" type="text/css"/>
     </head>
-    <body>
-        <div id="master">
-            <div class="main-container">
-                <div class="content">
-                    <p data-bind="text: welcomeMessage"></p>
-                </div>
-
-                <div class="content">
-                    <label for="from">YOU:</label>
-                    <label type="text" data-bind="text: name"></label>
-                </div>
-
-                <div class="content">
-                    <label for="text">Text</label>
-                    <textarea id="text" cols=50 rows=4 data-bind="textInput: currentMessage"></textarea>
-                </div>
-
-                <div class="content">
-                    <input type="button" value="Send" data-bind="click: sendMessage"/>
-                    <input type="button" value="Send Location" data-bind="click: sendLocation"/>
-                </div>
-
-                <div class="content">
-                    <div class="message-container">
-                        <!-- ko foreach: messages -->
-                        <div class="message">
-                            <div class="timestamp"><span data-bind="text: createdAt"></span></div>
-                            <div class="from"><span data-bind="text: from"></span></div>
-                            <div class="message-text"><span data-bind="text: text"></span></div>
-                        </div> 
-                        <!-- /ko -->
-                    </div>
-                </div>
-
-                <div class="content">
-                    <p data-bind="text: usersTypingMessage"></p>
-                </div>
+    <body id="master" class="main-content">
+        <div class="login-container">
+            <div class="user-name login-form-container">
+                <label for="user-name">Name</label>
+                <input type="text" data-bind="value: name" placeholder="e.x. Tommy Two Gloves"/>
             </div>
-            <div class="main-container">
-                <h5>Connected Users</h5>
-                <div class="connected-users">
-                    <!-- ko foreach: connectedUsers -->
-                    <span class="user-name" data-bind="text: $data"></span>
-                    <!-- /ko -->
-                </div>
+            <div class="chat-room login-form-container">
+                <label for="chat-room-text">Chat Room</label>
+                <input type="text" data-bind="value: chatRoom"/>
+            </div>
+            <div class="login-form-container">
+                <input type="button" data-bind="click: goToRoom" value="Go To Room"/>
             </div>
         </div>
 
-        <script src="/js/libs/jquery-3.2.1.min.js"></script>
-        <script src="/js/libs/knockout-4.5.2.js"></script>
-        <script src="/socket.io/socket.io.js"></script>
-        <script src="/js/index.js"></script>
+    <script src="/js/libs/jquery-3.2.1.min.js"></script>
+    <script src="/js/libs/knockout-4.5.2.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/index.js"></script>
     </body>
 </html>
