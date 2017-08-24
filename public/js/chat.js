@@ -2,6 +2,7 @@ function ViewModel() {
     var self = this;
     self.usersCurrentlyTyping = ko.observableArray();
     self.name = ko.observable();
+    self.chatRoom = ko.observable();
     self.connectedUsers = ko.observableArray();
     self.messages = ko.observableArray();
     self.currentMessage = ko.observable('');
@@ -9,7 +10,7 @@ function ViewModel() {
     self.welcomeMessage = ko.computed(function() {
         var multipleUsersConnected = self.connectedUsers().length > 1;
 
-        return `Welcome to the chat app! There ${multipleUsersConnected ? 'are' : 'is'} ${self.connectedUsers().length} ${multipleUsersConnected ? 'users' : 'user'} connected!`;
+        return `Welcome to ${self.chatRoom()}, There ${multipleUsersConnected ? 'are' : 'is'} ${self.connectedUsers().length} ${multipleUsersConnected ? 'users' : 'user'} connected!`;
     });
 
     self.usersTypingMessage = ko.computed(function() {
@@ -17,10 +18,15 @@ function ViewModel() {
         var multipleUsersCurrentlyTyping = self.usersCurrentlyTyping().length > 1;
 
         if(self.usersCurrentlyTyping().length > 0) {
-            message = self.usersCurrentlyTyping().join(', ') + (multipleUsersCurrentlyTyping ? ' have typed some shit' : ' has typed some shit');
+            var names = self.usersCurrentlyTyping().map(user => user.name);
+            message = names.join(', ') + (multipleUsersCurrentlyTyping ? ' have typed some shit' : ' has typed some shit');
         }
 
         return message;
+    });
+
+    self.pageTitle = ko.computed(function() {
+        return `Chat! | ${self.chatRoom()}`;
     });
 }
 
@@ -33,17 +39,25 @@ function Message(from, text, createdAt) {
 
 var viewModel = new ViewModel();
 ko.applyBindings(viewModel, document.getElementById('master'));
+ko.applyBindings(viewModel, document.getElementById('title'));
 
 var socket = io();
 
 socket.on('connect', function () {
     console.log('connected to server');
-    while (!viewModel.name() || viewModel.name().trim() === "") {
-        viewModel.name(prompt("What is your name?"));
-    }
+
+    var params = $.deparam(window.location.search);
+    socket.emit('join', params, function(err) {
+        if(err) {
+            alert(err);
+            window.location.href = '/';
+        } else {
+            viewModel.name(params.name);
+            viewModel.chatRoom(params.room);
+        }
+    });
 
     $('#text').focus();
-    socket.emit('newUserConnected', { user: viewModel.name(), room: 'Tha Best Room!' });
 });
 
 socket.on('disconnect', function () {
@@ -60,36 +74,18 @@ socket.on('newLocationMessage', function (message) {
     viewModel.messages.push(new Message(message.from, message.url, moment(message.createdAt).format('h:mm a')));
 });
 
-socket.on('connectedCountChanged', function (connection) {
-    var oldCount = $('#connectionCount').html();
-    if (oldCount === "") {
-        oldCount = 0;
-    }
-
-    // addMessage("Connection count changed from " + oldCount + " to " + connection.connectedCount);
-    // $('#connectionCount').html(connection.connectedCount);
+socket.on('updateUserList', function (data) {
+    viewModel.connectedUsers(data.userList);
 });
 
-socket.on('isTyping', function (usersTyping) {
-    viewModel.usersCurrentlyTyping(usersTyping.names);
-});
-
-socket.on('stoppedTyping', function (usersTyping) {
-    viewModel.usersCurrentlyTyping(usersTyping.names);
-});
-
-socket.on('addUser', function (users) {
-    viewModel.connectedUsers(users.names);
-});
-
-socket.on('removeUser', function (users) {
-    viewModel.connectedUsers(users.names);
+socket.on('updateUsersTyping', function (usersTyping) {
+    viewModel.usersCurrentlyTyping(usersTyping);
 });
 
 function isTyping() {
     if (viewModel.name().trim().length > 0) {
         if (viewModel.currentMessage().trim().length > 0) {
-            socket.emit('isTyping', {
+            socket.emit('startedTyping', {
                 from: viewModel.name(),
             });
         } else {
@@ -103,10 +99,7 @@ function isTyping() {
 function sendMessage() {
     if (viewModel.name().trim().length > 0 && viewModel.currentMessage().trim().length > 0) {
         socket.emit('createMessage', {
-            from: viewModel.name(),
             text: viewModel.currentMessage()
-        }, function(data) {
-            console.log('Got it', data.string);
         });
 
         viewModel.currentMessage('');
@@ -120,7 +113,6 @@ function sendLocation() {
         alert('Geolocation is not available');
     } else {
         navigator.geolocation.getCurrentPosition(function(position) {
-            console.log(position);
             socket.emit('createLocationMessage', {
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude

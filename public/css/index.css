@@ -1,6 +1,8 @@
 html, body {
+    font-family: sans-serif;
     height: 100%;
     width: 100%;
+    color: white;
 }
 
 .main-content {
@@ -9,6 +11,10 @@ html, body {
     align-items: center;
     justify-content: center;
     background: gray;
+}
+
+.main-content div {
+    margin: 15px;
 }
 
 .login-container {
@@ -30,6 +36,28 @@ html, body {
 input {
     border-radius: 20px;
     text-align: center;
-    padding: 4px;
+    padding: 10px;
     border: none;
+    background: white;
+}
+
+.existing-rooms-container {
+    background: #65aa67;
+    padding: 15px;
+}
+
+.existing-room {
+    cursor: pointer;
+}
+
+.existing-room:hover {
+    background: #4477aa;
+}
+
+.room-name {
+    font-weight: bold;
+}
+
+.room-occupancy {
+
 }

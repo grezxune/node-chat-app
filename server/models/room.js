@@ -10,7 +10,7 @@ class Room {
     addUser(id, userName) {
         var added = false;
 
-        if(!this.findUser(id) && !this.userNameExists(userName)) {
+        if(!this.getUser(id) && !this.userNameExists(userName)) {
             this.userList.push(new User(id, userName));
             added = true;
         }
@@ -19,9 +19,10 @@ class Room {
     }
 
     removeUser(id) {
-        var user = this.findUser(id);
+        var user = this.getUser(id);
 
         if (user) {
+            this.userStoppedTyping(id);
             var index = this.userList.indexOf(user);
 
             this.userList.splice(index, 1);
@@ -32,7 +33,7 @@ class Room {
         var userTyping = this.isUserTyping(id);
 
         if (!userTyping) {
-            this.usersTyping.push(findUser(id));
+            this.usersTyping.push(this.getUser(id));
         }
     }
 
@@ -49,7 +50,7 @@ class Room {
         return this.usersTyping.filter((user) => user.id === id)[0];
     }
 
-    findUser(id) {
+    getUser(id) {
         return this.userList.filter((user) => user.id === id)[0];
     }
 

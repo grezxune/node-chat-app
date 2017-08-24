@@ -12,117 +12,89 @@ const {generateMessage} = require('./utils/generateMessage');
 var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
-var connectedCount = 0;
-var usersTyping = new Array();
-var usersConnected = new Array();
+
 var {Rooms} = require('./models/rooms');
 var currentChatRooms = new Rooms();
 
 app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
-    console.log('new user connected');
-
     socket.on('join', (newUser, callback) => {
-        console.log('newUser:', newUser);
-        if(!isNullOrEmpty(newUser.name) && !isNullOrEmpty(newUser.room)) {
-            if(!currentChatRooms.join(newUser.room, newUser.name, socket.id)) {
-                callback(`There was an error with ${newUser.name} joining room ${newUser.room}`);
-            } else {
-                socket.join(newUser.room);
-                socket.emit('newMessage', generateMessage('Admin', `Welcome to ${newUser.room}!`));
-                socket.broadcast.emit('newMessage', generateMessage('Admin', `${newUser.name} has joined!`));
-                callback();
-            }
-        } else {
-            callback('User name and room are required');
-        }
+        addUser(newUser, socket, callback);
     });
 
-
-    connectedCount++;
-    io.emit('connectedCountChanged', { connectedCount: connectedCount });
-
-    // socket.emit('newMessage', {
-    //   from: 'tomtrezb2003@gmail.com',
-    //   text: 'hey man, what\'z up?',
-    //   createdAt: new Date().getTime()
-    // });
-
     socket.on('createMessage', (newMessage, callback) => {
-        console.log('createMessage', newMessage);
-        emitMessage(socket, newMessage, callback);
+        var room = currentChatRooms.getRoomUserIsIn(socket.id);
+        var user = room.getUser(socket.id);
+        io.to(room.name).emit('newMessage', generateMessage(user.name, newMessage.text));
     });
 
     socket.on('disconnect', () => {
-        console.log('user disconnected');
-        connectedCount--;
-        io.emit('connectedCountChanged', { connectedCount: connectedCount });
-        userStoppedTyping({ from: socket.name });
-        var index = usersConnected.indexOf(socket.name);
-        usersConnected.splice(index, 1);
-        io.emit('removeUser', { names: usersConnected });
+        removeUser(socket);
     });
 
-    socket.on('isTyping', (user) => {
-        if (!usersTyping.includes(user.from)) {
-            usersTyping.push(user.from);
-            io.emit('isTyping', { names: usersTyping });
-        }
+    socket.on('startedTyping', () => {
+        var room = currentChatRooms.getRoomUserIsIn(socket.id);
+        room.userStartedTyping(socket.id);
+        io.to(room.name).emit('updateUsersTyping', room.usersTyping);
     });
 
-    socket.on('stoppedTyping', (user) => {
-        userStoppedTyping(user);
-    });
-
-    socket.on('newUserConnected', (user) => {
-        console.log('new user connected', user);
-        socket.name = user.user;
-        if (user.user && user.user.trim().length > 0) {
-            usersConnected.push(user.user);
-            io.emit('addUser', { names: usersConnected });
-        }
+    socket.on('stoppedTyping', () => {
+        var room = currentChatRooms.getRoomUserIsIn(socket.id);
+        room.userStoppedTyping(socket.id);
+        io.to(room.name).emit('updateUsersTyping', room.usersTyping);
     });
 
     socket.on('createLocationMessage', (coords, callback) => {
         emitLocationMessage(socket, coords, callback);
     });
+
+    updateExistingRooms();
 });
 
-userStoppedTyping = (user) => {
-    console.log('userStoppedTyping', user);
-    if (usersTyping.includes(user.from)) {
-        var index = usersTyping.indexOf(user.from);
-        var newTest = usersTyping.splice(index, 1);
-        io.emit('stoppedTyping', { names: usersTyping });
-    }
-};
+updateExistingRooms = () => {
+    io.emit('updateExistingRooms', { existingRooms: currentChatRooms.rooms });
+}
 
-emitMessage = (socket, message, callback) => {
-    io.emit('newMessage', {
-        from: socket.name,
-        text: message.text,
-        createdAt: moment().valueOf()
-    });
+removeUser = (socket) => {
+    var room = currentChatRooms.getRoomUserIsIn(socket.id);
+    if(room) {
+        var user = room.getUser(socket.id);
+        if(user) {
+            socket.broadcast.to(room.name).emit('newMessage', generateMessage('Admin', `${user.name} has left us!`));
 
-    if(callback) {
-        callback({
-            'string': 'This is from the server'
-        });
+            currentChatRooms.leave(room.name, socket.id);
+            if(currentChatRooms.getRoom(room.name)) {
+                io.to(room.name).emit('updateUserList', { userList: room.userList });
+            }
+        }
+
+        updateExistingRooms();
     }
-};
+}
+
+addUser = (newUser, socket, callback) => {
+    if(!isNullOrEmpty(newUser.name) && !isNullOrEmpty(newUser.room)) {
+        if(!currentChatRooms.join(newUser.room, newUser.name, socket.id)) {
+            callback(`There was an error with ${newUser.name} joining room ${newUser.room}`);
+        } else {
+            socket.join(newUser.room);
+            socket.emit('newMessage', generateMessage('Admin', `Welcome to ${newUser.room}!`));
+            socket.broadcast.to(newUser.room).emit('newMessage', generateMessage('Admin', `${newUser.name} has joined!`));
+            io.to(newUser.room).emit('updateUserList', { userList: currentChatRooms.getRoom(newUser.room).userList });
+            updateExistingRooms();
+            callback();
+        }
+    } else {
+        callback('User name and room are required');
+    }
+}
 
 emitLocationMessage = (socket, coords, callback) => {
-    var date = new Date();
-    var options = {
-        weekday: "long", year: "numeric", month: "short",
-        day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit"
-    };
-
     io.emit('newLocationMessage', {
-        from: socket.name,
+        from: currentChatRooms.getRoomUserIsIn(socket.id).getUser(socket.id).name,
         url: `https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`,
-        createdAt: date.toLocaleDateString('en-us', options)
+        createdAt: moment().valueOf()
     });
 
     if(callback) {

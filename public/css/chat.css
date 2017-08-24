@@ -1,3 +1,7 @@
+html, body {
+    font-family: sans-serif;
+}
+
 #master {
     display: flex;
     flex-flow: row nowrap;
@@ -38,4 +42,15 @@
 
 .message {
     display: block;
+    background: #ebffec;
+}
+
+.from {
+    display: inline-block;
+    font-weight: bold;
+}
+
+.timestamp {
+    display: inline-block;
+    color: gray;
 }

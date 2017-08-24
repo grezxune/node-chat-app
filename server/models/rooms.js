@@ -13,7 +13,7 @@ class Rooms {
             this.rooms.push(room);
         }
 
-        return room.addUser(userName, userId);
+        return room.addUser(userId, userName);
     }
 
     leave(name, userId) {
@@ -22,10 +22,11 @@ class Rooms {
         if (room) {
             room.removeUser(userId);
 
-            var index = this.rooms.indexOf(room);
-
-            if (index > -1) {
-                this.rooms.splice(index, 1);
+            if(room.userList.length <= 0) {
+                var index = this.rooms.indexOf(room);
+                if (index > -1) {
+                    this.rooms.splice(index, 1);
+                }
             }
         }
     }
@@ -47,6 +48,10 @@ class Rooms {
 
     getRoom(name) {
         return this.rooms.filter((room) => room.name === name)[0];
+    }
+
+    getRoomUserIsIn(id) {
+        return this.rooms.filter((room) => room.getUser(id))[0];
     }
 }
 

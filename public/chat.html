@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Chat App</title>
+        <title id="title" data-bind="text: pageTitle"></title>
         <meta charset="utf-8"/>
         <link rel="stylesheet" href="/css/chat.css" type="text/css"/>
     </head>
@@ -13,7 +13,7 @@
                 </div>
 
                 <div class="content">
-                    <label for="from">YOU:</label>
+                    <label>YOU:</label>
                     <label type="text" data-bind="text: name"></label>
                 </div>
 
@@ -31,8 +31,8 @@
                     <div class="message-container">
                         <!-- ko foreach: messages -->
                         <div class="message">
-                            <div class="timestamp"><span data-bind="text: createdAt"></span></div>
                             <div class="from"><span data-bind="text: from"></span></div>
+                            <div class="timestamp"><span data-bind="text: createdAt"></span></div>
                             <div class="message-text"><span data-bind="text: text"></span></div>
                         </div> 
                         <!-- /ko -->
@@ -47,7 +47,7 @@
                 <h5>Connected Users</h5>
                 <div class="connected-users">
                     <!-- ko foreach: connectedUsers -->
-                    <span class="user-name" data-bind="text: $data"></span>
+                    <span class="user-name" data-bind="text: $data.name"></span>
                     <!-- /ko -->
                 </div>
             </div>
@@ -56,7 +56,8 @@
         <script src="/js/libs/jquery-3.2.1.min.js"></script>
         <script src="/js/libs/knockout-4.5.2.js"></script>
         <script src="/socket.io/socket.io.js"></script>
-        <script src="/js/libs/moment.d.ts"></script>
+        <script src="/js/libs/moment.js"></script>
+        <script src="/js/libs/deparam.js"></script>
         <script src="/js/chat.js"></script>
     </body>
 </html>
