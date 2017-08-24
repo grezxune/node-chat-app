@@ -7,12 +7,6 @@ function ViewModel() {
     self.messages = ko.observableArray();
     self.currentMessage = ko.observable('');
 
-    self.welcomeMessage = ko.computed(function() {
-        var multipleUsersConnected = self.connectedUsers().length > 1;
-
-        return `Welcome to ${self.chatRoom()}, There ${multipleUsersConnected ? 'are' : 'is'} ${self.connectedUsers().length} ${multipleUsersConnected ? 'users' : 'user'} connected!`;
-    });
-
     self.usersTypingMessage = ko.computed(function() {
         var message = '';
         var multipleUsersCurrentlyTyping = self.usersCurrentlyTyping().length > 1;
@@ -27,6 +21,10 @@ function ViewModel() {
 
     self.pageTitle = ko.computed(function() {
         return `Chat! | ${self.chatRoom()}`;
+    });
+
+    self.connectedUsersHeader = ko.computed(function () {
+        return 'Connected Users (' + self.connectedUsers().length + ')';
     });
 }
 
@@ -130,10 +128,6 @@ $(document).ready(function () {
         if (key.keyCode === 13) {
             key.preventDefault();
             sendMessage();
-        }
-    }).on('keyup', function (key) {
-        if (key.keyCode === 13) {
-            key.preventDefault();
         } else {
             isTyping();
         }

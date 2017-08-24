@@ -46,6 +46,7 @@ $(document).ready(function() {
     $(document).on('keydown', function (key) {
         if (key.keyCode === 13) {
             key.preventDefault();
+            $(':focus').blur();
             viewModel.goToRoom();
         }
     });
