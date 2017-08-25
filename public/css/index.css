@@ -48,6 +48,7 @@ input {
 
 .existing-room {
     cursor: pointer;
+    text-align: center;
 }
 
 .existing-room:hover {

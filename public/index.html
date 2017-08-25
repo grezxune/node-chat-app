@@ -3,10 +3,19 @@
     <head>
         <meta name="viewport" content="width=device-width">
         <meta charset="utf-8"/>
-        <title>Chat | ChatApp</title>
+        <title>Chat!</title>
         <link rel="stylesheet" href="/css/index.css" type="text/css"/>
     </head>
     <body id="master" class="main-content">
+        <div class="existing-rooms-container">
+            <span class="existing-rooms-header">Current Rooms &amp; Users</span>
+            <!-- ko foreach: existingRooms -->
+            <div class="existing-room" data-bind="click: $parent.setChatRoom">
+                <span class="room-name" data-bind="text: name"></span>
+                <span class="room-occupancy" data-bind="text: ' - ' + userList.length"></span>
+            </div>
+            <!-- /ko -->
+        </div>
         <div class="login-container">
             <div class="user-name login-form-container">
                 <label for="user-name-text">Name</label>
@@ -19,15 +28,6 @@
             <div class="login-form-container">
                 <input type="button" data-bind="click: goToRoom" value="Go To Room"/>
             </div>
-        </div>
-        <div class="existing-rooms-container">
-            <span class="existing-rooms-header">Current Rooms &amp; Users</span>
-            <!-- ko foreach: existingRooms -->
-            <div class="existing-room" data-bind="click: $parent.setChatRoom">
-                <span class="room-name" data-bind="text: name"></span>
-                <span class="room-occupancy" data-bind="text: ' - ' + userList.length"></span>
-            </div>
-            <!-- /ko -->
         </div>
 
     <script src="/js/libs/jquery-3.2.1.min.js"></script>

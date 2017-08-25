@@ -20,6 +20,7 @@ function ViewModel() {
 
     self.setChatRoom = function(room) {
         self.chatRoom(room.name);
+        $('#user-name-text').focus();
     }
 }
 

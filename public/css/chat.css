@@ -17,7 +17,7 @@ html, body {
 #master {
     display: flex;
     flex-flow: row nowrap;
-    align-items: center;
+    align-items: flex-start;
     justify-content: left;
     height: 100%;
     width: 100%;
@@ -28,23 +28,35 @@ html, body {
     flex-flow: column nowrap;
     align-items: center;
     justify-content: center;
-    /* margin: 20px; */
 }
 
 .connected-users-container {
     display: flex;
     flex-flow: column nowrap;
-    /* align-items: center;
-    justify-content: flex-start; */
-    margin: 20px;
+    align-items: center;
+    justify-content: flex-start; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 25%;
+    height: 100%;
+    background: #ebffec;
+}
+
+.connected-users-header {
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.you {
+    background: #ffa9ac;
 }
 
 .content {
-    margin: 10px;
     display: flex;
     flex-flow: row nowrap;
     justify-content: center;
     align-items: center;
+    margin: 5px 0px 5px 0px;
 }
 
 .content * {
@@ -52,8 +64,8 @@ html, body {
 }
 
 .user-name {
-    font-weight: bold;
     display: block;
+    text-align: center;
 }
 
 .message-container {
@@ -74,6 +86,7 @@ html, body {
 .message {
     display: block;
     background: #ebffec;
+    overflow-wrap: break-word;
 }
 
 .from {
@@ -89,6 +102,7 @@ html, body {
 .users-typing-container {
     height: 25px;
     width: 100%;
+    padding: 5px;
     text-align: left;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -96,7 +110,7 @@ html, body {
 
 .chat-content-container {
     height: 100%;
-    width: 100%;
+    width: 75%;
     display: flex;
     flex-flow: column nowrap;
     justify-content: space-between;

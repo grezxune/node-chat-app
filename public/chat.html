@@ -3,17 +3,17 @@
     <head>
         <title id="title" data-bind="text: pageTitle"></title>
         <meta charset="utf-8"/>
-        <!-- <meta name="viewport" content="width=device-width"> -->
+         <meta name="viewport" content="width=device-width"> 
         <link rel="stylesheet" href="/css/visibility.css" type="text/css"/>
         <link rel="stylesheet" href="/css/chat.css" type="text/css"/>
     </head>
     <body>
         <div id="master">
             <div class="connected-users-container">
-                <span data-bind="text: connectedUsersHeader"></span>
+                <span data-bind="text: connectedUsersHeader" class="connected-users-header"></span>
                 <div class="connected-users">
                     <!-- ko foreach: connectedUsers -->
-                    <span class="user-name" data-bind="text: $data.name"></span>
+                    <span class="user-name" data-bind="text: $data.name, css: { 'you': $data.name === $root.name() }"></span>
                     <!-- /ko -->
                 </div>
             </div>
@@ -41,7 +41,7 @@
                     <!-- <textarea id="text" cols=50 rows=4 data-bind="textInput: currentMessage"></textarea> -->
                     <input type="text" id="text" data-bind="textInput: currentMessage"/>
                     <input type="button" value="Send" data-bind="click: sendMessage"/>
-                    <input type="button" value="Send Location" data-bind="click: sendLocation"/>
+                    <input type="button" value="Send Location" data-bind="click: sendLocation, css: { 'visible': canFetchLocation, 'hidden': !canFetchLocation }"/>
                 </div>
 
                 <div class="users-typing-container" data-bind="css: { visible: usersCurrentlyTyping().length > 0, hidden: usersCurrentlyTyping().length <= 0 }">

@@ -26,6 +26,23 @@ function ViewModel() {
     self.connectedUsersHeader = ko.computed(function () {
         return 'Connected Users (' + self.connectedUsers().length + ')';
     });
+
+    self.sortConnectedUsers = ko.computed(function() {
+        if(self.connectedUsers().length > 0) {
+            var me = self.connectedUsers().filter(function(user) {
+                return user.id === socket.id;
+            })[0];
+            var index = self.connectedUsers().indexOf(me);
+            self.connectedUsers().splice(index, 1);
+            var finalList = self.connectedUsers().sort(function(a, b) {
+                return a.name > b.name;
+            });
+            finalList.unshift(me);
+            self.connectedUsers(finalList);
+        }
+    });
+
+    self.canFetchLocation = ko.observable(navigator.geolocation);
 }
 
 function Message(from, text, createdAt) {
@@ -81,16 +98,10 @@ socket.on('updateUsersTyping', function (usersTyping) {
 });
 
 function isTyping() {
-    if (viewModel.name().trim().length > 0) {
-        if (viewModel.currentMessage().trim().length > 0) {
-            socket.emit('startedTyping', {
-                from: viewModel.name(),
-            });
-        } else {
-            socket.emit('stoppedTyping', {
-                from: viewModel.name()
-            });
-        }
+    if (viewModel.currentMessage().trim().length > 0) {
+        socket.emit('startedTyping');
+    } else {
+        socket.emit('stoppedTyping');
     }
 }
 
@@ -128,6 +139,12 @@ $(document).ready(function () {
         if (key.keyCode === 13) {
             key.preventDefault();
             sendMessage();
+        } else {
+            isTyping();
+        }
+    }).on('keyup', function(key) {
+        if (key.keyCode === 13) {
+            key.preventDefault();
         } else {
             isTyping();
         }
