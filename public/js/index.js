@@ -3,6 +3,13 @@ function ViewModel() {
     self.name = ko.observable('');
     self.chatRoom = ko.observable('');
     self.existingRooms = ko.observableArray([]);
+    self.noRoomsMessage = ko.computed(function() {
+        if(self.existingRooms().length <= 0) {
+            return 'Currently no rooms occupied, create one!';
+        } else {
+            return '';
+        }
+    });
 
     self.goToRoom = function() {
         if(self.name().trim().length > 0 &&
