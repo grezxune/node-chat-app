@@ -5,3 +5,7 @@
 .hidden {
     visibility: hidden;
 }
+
+.collapsed {
+    visibility: collapse;
+}

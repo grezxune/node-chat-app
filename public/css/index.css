@@ -44,6 +44,11 @@ input {
 .existing-rooms-container {
     background: #65aa67;
     padding: 15px;
+    text-align: center;
+}
+
+.existing-rooms-header {
+    text-decoration: underline;
 }
 
 .existing-room {

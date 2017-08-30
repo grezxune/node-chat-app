@@ -9,6 +9,9 @@
     <body id="master" class="main-content">
         <div class="existing-rooms-container">
             <span class="existing-rooms-header">Current Rooms &amp; Users</span>
+            <div data-bind="css: { 'visible': existingRooms().length > 0, 'collapse': existingRooms().length === 0 }">
+                <span class="no-rooms-message">Currently no rooms occupied, create one!</span>
+            </div>
             <!-- ko foreach: existingRooms -->
             <div class="existing-room" data-bind="click: $parent.setChatRoom">
                 <span class="room-name" data-bind="text: name"></span>
