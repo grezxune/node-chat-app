@@ -22,14 +22,9 @@
                     <span class="room-name" data-bind="text: chatRoom"></span>
                 </div>
 
-                <!-- <div class="content">
-                    <label>YOU:</label>
-                    <label type="text" data-bind="text: name"></label>
-                </div> -->
-
                 <div class="content message-container">
                     <!-- ko foreach: messages -->
-                    <div class="message">
+                    <div class="message" data-bind="template: { afterRender: $parent.scrollToBottom }">
                         <div class="from"><span data-bind="text: from"></span></div>
                         <div class="timestamp"><span data-bind="text: createdAt"></span></div>
                         <div class="message-text"><span data-bind="text: text"></span></div>
@@ -38,7 +33,6 @@
                 </div>
 
                 <div class="content user-message-container">
-                    <!-- <textarea id="text" cols=50 rows=4 data-bind="textInput: currentMessage"></textarea> -->
                     <input type="text" id="text" data-bind="textInput: currentMessage"/>
                     <input type="button" value="Send" data-bind="click: sendMessage"/>
                     <input type="button" value="Send Location" data-bind="click: sendLocation, css: { 'visible': canFetchLocation, 'hidden': !canFetchLocation }"/>

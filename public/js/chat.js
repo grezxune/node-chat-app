@@ -1,13 +1,21 @@
 function ViewModel() {
     var self = this;
+
+    // *** Observable Arrays *** //
     self.usersCurrentlyTyping = ko.observableArray();
-    self.name = ko.observable();
-    self.chatRoom = ko.observable();
     self.connectedUsers = ko.observableArray();
     self.messages = ko.observableArray();
-    self.currentMessage = ko.observable('');
+    // *** /Observable Arrays *** //
 
-    self.usersTypingMessage = ko.computed(function() {
+    // *** Observables *** //
+    self.name = ko.observable();
+    self.chatRoom = ko.observable();
+    self.currentMessage = ko.observable('');
+    self.canFetchLocation = ko.observable(!(!navigator.geolocation));
+    // *** /Observables *** //
+
+    // *** Pure Computed Members *** //
+    self.usersTypingMessage = ko.pureComputed(function() {
         var message = '';
         var multipleUsersCurrentlyTyping = self.usersCurrentlyTyping().length > 1;
 
@@ -19,14 +27,16 @@ function ViewModel() {
         return message;
     });
 
-    self.pageTitle = ko.computed(function() {
+    self.pageTitle = ko.pureComputed(function() {
         return `Chat! | ${self.chatRoom()}`;
     });
 
-    self.connectedUsersHeader = ko.computed(function () {
+    self.connectedUsersHeader = ko.pureComputed(function () {
         return 'Connected Users (' + self.connectedUsers().length + ')';
     });
+    // *** /Pure Computed Members *** //
 
+    // *** Computed Members *** //
     self.sortConnectedUsers = ko.computed(function() {
         if(self.connectedUsers().length > 0) {
             var me = self.connectedUsers().filter(function(user) {
@@ -41,8 +51,28 @@ function ViewModel() {
             self.connectedUsers(finalList);
         }
     });
+    // *** /Computed Members *** //
 
-    self.canFetchLocation = ko.observable(navigator.geolocation);
+    // *** Event Subscriptions *** //
+    // *** /Event Subscriptions *** //
+
+    // *** Functions Called From HTML *** //
+    self.scrollToBottom = function() {
+        // Selectors
+        var messages = $('.message-container');
+        var newMessage = messages.children('.message:last-child');
+        // Heights
+        var clientHeight = messages.prop('clientHeight');
+        var scrollTop = messages.prop('scrollTop');
+        var scrollHeight = messages.prop('scrollHeight');
+        var newMessageHeight = newMessage.innerHeight();
+        var lastMessageHeight = newMessage.prev().innerHeight();
+
+        if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
+            messages.scrollTop(messages.prop('scrollHeight'));
+        }
+    }
+    // *** /Functions Called From HTML *** //
 }
 
 function Message(from, text, createdAt) {
