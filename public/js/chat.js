@@ -12,6 +12,8 @@ function ViewModel() {
     self.chatRoom = ko.observable();
     self.currentMessage = ko.observable('');
     self.canFetchLocation = ko.observable(!(!navigator.geolocation));
+    self.numberOfMissedMessages = ko.observable(0);
+    self.tabHasFocus = ko.observable();
     // *** /Observables *** //
 
     // *** Pure Computed Members *** //
@@ -27,12 +29,16 @@ function ViewModel() {
         return message;
     });
 
-    self.pageTitle = ko.pureComputed(function() {
-        return `Chat! | ${self.chatRoom()}`;
-    });
-
     self.connectedUsersHeader = ko.pureComputed(function () {
         return 'Connected Users (' + self.connectedUsers().length + ')';
+    });
+
+    self.missedMessagesString = ko.pureComputed(function() {
+        return self.numberOfMissedMessages() > 0 ? `(${self.numberOfMissedMessages()})` : '';
+    });
+
+    self.pageTitle = ko.pureComputed(function() {
+        return `Chat! | ${self.chatRoom()} ${self.missedMessagesString()}`;
     });
     // *** /Pure Computed Members *** //
 
@@ -54,6 +60,18 @@ function ViewModel() {
     // *** /Computed Members *** //
 
     // *** Event Subscriptions *** //
+    self.messages.subscribe(function() {
+        if(self.tabHasFocus()) {
+            self.numberOfMissedMessages(0);
+        } else {
+            var numberOfMissedMessages = self.numberOfMissedMessages() + 1;
+            self.numberOfMissedMessages(numberOfMissedMessages);
+        }
+    });
+
+    self.tabHasFocus.subscribe(function(newValue) {
+        self.numberOfMissedMessages(0);
+    });
     // *** /Event Subscriptions *** //
 
     // *** Functions Called From HTML *** //
@@ -178,5 +196,22 @@ $(document).ready(function () {
         } else {
             isTyping();
         }
+    });
+
+    $(window).on("blur focus", function(e) {
+        var prevType = $(this).data("prevType");
+    
+        if (prevType != e.type) {   //  reduce double fire issues
+            switch (e.type) {
+                case "blur":
+                    viewModel.tabHasFocus(false);
+                    break;
+                case "focus":
+                    viewModel.tabHasFocus(true);
+                    break;
+            }
+        }
+    
+        $(this).data("prevType", e.type);
     });
 });
